@@ -1,21 +1,17 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { fetchPosts } from '../actions/postActions';
 
 class Posts extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      posts: [],
-    };
-  }
+  //   constructor(props) {
+  //     super(props);
+  //     this.state = {
+  //       posts: [],
+  //     };
+  //   }
 
   componentDidMount() {
-    fetch('https://jsonplaceholder.typicode.com/posts?_limit=15')
-      .then((res) => res.json())
-      .then((data) =>
-        this.setState({
-          posts: data,
-        })
-      );
+    this.props.fetchPosts();
   }
 
   render() {
@@ -34,4 +30,4 @@ class Posts extends Component {
   }
 }
 
-export default Posts;
+export default connect(null, { fetchPosts })(Posts);
