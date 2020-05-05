@@ -1,5 +1,11 @@
 \$ create-react-app .
 
+\$ npm i redux react-redux redux-thunk
+
+redux:
+react-redux: libary that bind react & redux
+redux-thunk: middleware for redux allow us to access directly with dispatch method
+
 create:
 component/Posts.js | rcc tab
 component/Postform.js | rcc tab
@@ -8,11 +14,6 @@ component/Postform.js | rcc tab
 
 bring <Posts> & <Postform>
 
-\$ npm i redux react-redux redux-thunk
-
-redux:
-react-redux: libary that bind react & redux
-redux-thunk: middleware for redux allow us to access directly with dispatch method
 
 # bring in store and Provider:
 
@@ -71,6 +72,7 @@ create:
 src/reducers/index.js 【 combine all of our reducers 】
 src/reducers/postReducer.js 【 evaluate any actions that are commited: 】
 src/actions/types.js 【 constants 】
+src/actions/postActions.js 【 make actions 】
 
 <!-- src/reducers/index.js -->
 
@@ -79,8 +81,9 @@ import { combineReducers } from 'redux';
 import postReducer from './postReducer';
 
 export default combineReducers({
-posts: postReducer,
+  posts: postReducer,
 });
+
 
 <!-- src/actions/types.js -->
 
@@ -90,62 +93,81 @@ export const NEW_POST = 'NEW_POST';
 <!-- src/reducers/postReducer.js -->
 
 // evaluate any actions that are commited: such as createPost, etc.
-import { FETCH_POSTS, NEW_POSTS } from '../actions/types';
+import { FETCH_POSTS, NEW_POST } from '../actions/types';
 
 const initialState = {
-items: [],
-item: {},
+  items: [],
+  item: {},
 };
 
 export default function (state = initialState, action) {
-switch (action.type) {
-case FETCH_POSTS: return {...state, items: action.payload,};
-default:return state;
-}}
-
-# fill actions:
-
-create actions/postActions.js
+  switch (action.type) {
+    case FETCH_POSTS:
+      console.log('fatch');
+      return {
+        ...state,
+        items: action.payload,
+      };
+    // case NEW_POST:
+    //   return {
+    //     ...state,
+    //     item: action.payload
+    //   };
+    default:
+      return state;
+  }
+}
 
 <!-- actions/postActions.js -->
 
 import { FETCH_POSTS, NEW_POSTS } from './types';
 
-// export function fetchPosts() {
-// return function (dispatch) {
-// fetch('https://jsonplaceholder.typicode.com/posts?_limit=15')
-// .then((res) => res.json())
-// .then((posts) => dispatch({
-// type: FETCH_POSTS,
-// payload: posts
-// })
-// );
-// }
-// }
-
-// same as :
+import { FETCH_POSTS, NEW_POST } from './types';
 
 export const fetchPosts = () => (dispatch) => {
-return function (dispatch) {
-fetch('https://jsonplaceholder.typicode.com/posts?_limit=15')
-.then((res) => res.json())
-.then((posts) =>
-dispatch({
-type: FETCH_POSTS,
-payload: posts,
-})
-);
+  console.log('fetching');
+  fetch('https://jsonplaceholder.typicode.com/posts')
+    .then((res) => res.json())
+    .then((posts) =>
+      dispatch({
+        type: FETCH_POSTS,
+        payload: posts,
+      })
+    );
 };
-};
+
 
 <!-- components/Posts.js -->
 
-take out componentDidMount() and constructor()
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { fetchPosts } from '../actions/postActions';
+
 class Posts extends Component {
-render(){
-...
+  componentDidMount() {
+    this.props.fetchPosts();
+  }
+  render() {
+    const postItems = this.props.posts.map((post) => (
+      <div key={post.id}>
+        <h3>{post.title}</h3>
+        <p>{post.body}</p>
+      </div>
+    ));
+    return (
+      <div>
+        <h1>Posts</h1>
+        {postItems}
+      </div>
+    );
+  }
 }
-}
+const mapStateToProps = (state) => ({
+  posts: state.posts.items,
+});
+
+export default connect(mapStateToProps, { fetchPosts })(Posts);
+
 
 # import all that mess to Posts.js
 
@@ -157,4 +179,9 @@ import { fetchPosts } from '../actions/postActions';
 componentDidMount() {
 this.props.fetchPosts();
 }
+
 export default connect(null, { fetchPosts })(Posts);
+
+# 两个 cheeck point 的 console.log 都不对，48:09，等会回来看看。
+
+# 24:13 npm i react-redux, redux, redux-thunk
