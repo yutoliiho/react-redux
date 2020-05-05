@@ -9,7 +9,7 @@ class Posts extends Component {
   }
 
   componentDidMount() {
-    fetch('https://jsonplaceholder.typicode.com/posts?_limit=10')
+    fetch('https://jsonplaceholder.typicode.com/posts?_limit=15')
       .then((res) => res.json())
       .then((data) =>
         this.setState({
